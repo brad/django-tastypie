@@ -2113,7 +2113,11 @@ class BaseModelResource(Resource):
         the instance.
         """
         # prevents FieldError when looking up nested resources containing extra data
-        field_names = [f.name for f in self._meta.object_class._meta.get_fields()]
+        try:
+            fields = self._meta.object_class._meta.get_fields()
+            field_names = [f.name for f in fields]
+        except AttributeError:  # Django 1.7 fallback
+            field_names = self._meta.object_class._meta.get_all_field_names()
         field_names.append('pk')
 
         kwargs = {k: v for k, v in kwargs.items() if k in field_names}

@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from copy import deepcopy
 from datetime import datetime
+from itertools import chain
 import logging
 from time import mktime
 import warnings
@@ -2113,7 +2114,7 @@ class BaseModelResource(Resource):
         the instance.
         """
         # prevents FieldError when looking up nested resources containing extra data
-        field_names = self._meta.object_class._meta.get_all_field_names()
+        field_names = [f.name for f in self._meta.object_class._meta.get_fields()]
         field_names.append('pk')
 
         kwargs = {k: v for k, v in kwargs.items() if k in field_names}
